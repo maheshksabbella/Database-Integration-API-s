@@ -1,0 +1,222 @@
+#%RAML 1.0 ResourceType
+
+delete?:
+  responses:
+   200:
+       body:
+            application/json:
+              type: <<del-response-schema>>
+              example: <<del-response-example>>
+   400:
+        body:
+          application/json:
+            type: <<error-schema>>
+            example: !include /examples/errors/error400Example.json
+   401:
+        body:
+          application/json:
+            type: <<error-schema>>
+            example: !include /examples/errors/error401Example.json
+   403:
+         body:
+           application/json:
+             type: <<error-schema>>
+             example: !include /examples/errors/error403Example.json
+   404:
+         body:
+           application/json:
+             type: <<error-schema>>
+             example: !include /examples/errors/error404Example.json
+   422:
+         body:
+           application/json:
+             type: <<error-schema>>
+             example: !include /examples/errors/error422Example.json
+   500:
+         body:
+           application/json:
+              type: <<error-schema>>
+              example: !include /examples/errors/error500Example.json
+   501:
+         body:
+            application/json:
+               type: <<error-schema>>
+               example: !include /examples/errors/error501Example.json
+   503:
+          body:
+           application/json:
+              type: <<error-schema>>
+              example: !include /examples/errors/error503Example.json
+   504:
+        body:
+          application/json:
+            type: <<error-schema>>
+            example: !include /examples/errors/error504Example.json
+post?:
+  body:
+     application/json:
+        type: <<post-request-schema>>
+        example: <<post-request-example>>
+  responses:
+   201:
+      body:
+        application/json:
+              type: <<post-response-schema>>
+              example: <<post-response-example>>
+   400:
+        body:
+          application/json:
+            type: <<error-schema>>
+            example: !include /examples/errors/error400Example.json
+   401:
+        body:
+          application/json:
+            type: <<error-schema>>
+            example: !include /examples/errors/error401Example.json
+   403:
+         body:
+           application/json:
+             type: <<error-schema>>
+             example: !include /examples/errors/error403Example.json
+   404:
+         body:
+           application/json:
+             type: <<error-schema>>
+             example: !include /examples/errors/error404Example.json
+   422:
+      body:
+        application/json:
+             type: <<error-schema>>
+             example: !include /examples/errors/error422Example.json
+   500:
+      body:
+        application/json:
+             type: <<error-schema>>
+             example: !include /examples/errors/error500Example.json
+
+   501:
+      body:
+        application/json:
+           type: <<error-schema>>
+           example: !include /examples/errors/error501Example.json
+   503:
+      body:
+        application/json:
+              type: <<error-schema>>
+              example: !include /examples/errors/error503Example.json
+   504:
+          body:
+           application/json:
+              type: <<error-schema>>
+              example: !include /examples/errors/error504Example.json       
+
+put?:
+  body:
+    application/json:
+          type: <<put-request-schema>>
+          example: <<put-request-example>>
+
+  responses:
+   200:
+      body:
+        application/json:
+          type: <<put-response-schema>>
+          example: <<put-response-example>>
+   400:
+        body:
+          application/json:
+            type: <<error-schema>>
+            example: !include /examples/errors/error400Example.json
+   401:
+        body:
+          application/json:
+            type: <<error-schema>>
+            example: !include /examples/errors/error401Example.json
+   403:
+         body:
+           application/json:
+             type: <<error-schema>>
+             example: !include /examples/errors/error403Example.json
+   404:
+         body:
+           application/json:
+             type: <<error-schema>>
+             example: !include /examples/errors/error404Example.json
+   422:
+         body:
+           application/json:
+             type: <<error-schema>>
+             example: !include /examples/errors/error422Example.json
+   500:
+         body:
+           application/json:
+              type: <<error-schema>>
+              example: !include /examples/errors/error500Example.json
+   501:
+         body:
+            application/json:
+               type: <<error-schema>>
+               example: !include /examples/errors/error501Example.json
+   503:
+          body:
+           application/json:
+              type: <<error-schema>>
+              example: !include /examples/errors/error503Example.json
+   504:
+        body:
+          application/json:
+            type: <<error-schema>>
+            example: !include /examples/errors/error504Example.json
+
+get?:
+  responses:
+   200:
+     body:
+       application/json:
+          type: <<get-response-schema>>
+          example: <<get-response-example>>
+   400:
+        body:
+          application/json:
+            type: <<error-schema>>
+            example: !include /examples/errors/error400Example.json
+   401:
+        body:
+          application/json:
+            type: <<error-schema>>
+            example: !include /examples/errors/error401Example.json
+   403:
+         body:
+           application/json:
+             type: <<error-schema>>
+             example: !include /examples/errors/error403Example.json
+   404:
+         body:
+           application/json:
+             type: <<error-schema>>
+             example: !include /examples/errors/error404Example.json
+   422:
+         body:
+           application/json:
+             type: <<error-schema>>
+             example: !include /examples/errors/error422Example.json
+   500:
+         body:
+           application/json:
+              type: <<error-schema>>
+              example: !include /examples/errors/error500Example.json
+   501:
+         body:
+            application/json:
+               type: <<error-schema>>
+               example: !include /examples/errors/error501Example.json
+   503:
+          body:
+           application/json:
+              type: <<error-schema>>
+              example: !include /examples/errors/error503Example.json
+   504:
+        body:
+          application/json:
+            type: <<error-schema>>
+            example: !include /examples/errors/error504Example.json

@@ -1,0 +1,89 @@
+#%RAML 1.0
+title: ic-db-sapi
+description: This is an API,that is used to integrate with database 
+version: v1
+protocols: [HTTP,HTTPS]
+mediaType: 
+  - application/json
+
+traits:
+   client-id-required:
+      headers:
+        client_id:
+          type: string
+        client_secret:
+          type: string
+      responses:
+        401:
+          description: Unauthorized or invalid client application credentials
+        500:
+          description: Bad response from authorization server, or WSDL SOAP Fault error
+   trackingParams:
+    headers:
+      X-Correlation-ID:
+        description: A unique identifier for this message, to enable tracking, reporting, and correlation.
+        type: string
+        required: false
+
+
+uses:
+  errorsDataType: /resources/libraries/errorsDataType.raml
+  postRequestSchema: /resources/libraries/postRequestSchema.raml
+  postResponseSchema: /resources/libraries/postResponseSchema.raml
+  getResponseSchema: /resources/libraries/getResponseSchema.raml
+  getResponsesSchema: /resources/libraries/getResponsesSchema.raml
+  deleteResponseSchema: /resources/libraries/deleteResponseSchema.raml
+  putResponseSchema: /resources/libraries/putResponseSchema.raml
+ 
+resourceTypes:
+  allcollection: !include /resourceTypes/AllCollection.raml
+  
+
+
+/contacts:
+  type: 
+    allcollection:
+      post-request-schema: postRequestSchema.request
+      post-request-example: !include /examples/requests/postRequestExample.json
+      post-response-schema: postResponseSchema.response
+      post-response-example: !include /examples/responses/putResponseExample.json
+      get-response-example: !include /examples/responses/getResponsesExample.json
+      get-response-schema: getResponsesSchema.contactArray
+      error-schema: errorsDataType.error
+     
+
+  get:
+    is: [client-id-required,trackingParams]
+    description: To retrive all contacts 
+  post:
+     is: [client-id-required,trackingParams]
+     description: To create a new contact   
+    
+  /{id}:
+     type: 
+       allcollection :
+         get-response-example: !include /examples/responses/getResponseExample.json
+         get-response-schema: getResponseSchema.contactArray
+         put-request-schema: postRequestSchema.request
+         put-request-example: !include /examples/requests/putRequestExample.json
+         put-response-schema: putResponseSchema.response
+         put-response-example: !include /examples/responses/putResponseExample.json
+         del-response-example: !include /examples/responses/deleteResponseExample.json
+         del-response-schema: deleteResponseSchema.response
+         error-schema: errorsDataType.error
+
+     get:
+        is: [client-id-required,trackingParams]
+        description: To retrive a single contact using id
+     delete:
+         is: [client-id-required,trackingParams]
+         description: To delete a particular contact using id
+     put:
+        is: [client-id-required,trackingParams]
+        description: To modify an existing contact using id
+      
+ 
+ 
+  
+
+  

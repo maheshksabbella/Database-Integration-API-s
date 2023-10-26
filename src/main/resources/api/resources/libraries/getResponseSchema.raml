@@ -1,0 +1,34 @@
+#%RAML 1.0 Library
+
+types:
+  Contact:
+    properties:
+      Id: integer
+      Email: string
+      FirstName: string
+      MailingCountry: string
+      Title: string
+      MailingCity: string
+      type: string
+      OtherState: string
+      OtherStreet: string
+      MailingState: string
+      MobilePhone: string
+      OtherCity: string
+      MailingPostalCode: string
+      OtherCountry: string
+      LastName: string
+      MailingStreet: string
+      ExternalId__c: 
+        type: integer
+        required: false
+      SyncNewRecordToSFDB: 
+        type: boolean
+        required: false
+      SyncUpdatedRecordToSFDB: 
+        type: boolean
+        required: false
+
+  contactArray:
+    type: array
+    items: Contact

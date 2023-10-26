@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+ 
+    <flow name="ic-sfdc-sapi-main">
+        <http:listener config-ref="ic-sfdc-sapi-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="ic-sfdc-sapi-config" />
+		<error-handler ref="Error_Handler" />
+    </flow>
+    <flow name="ic-sfdc-sapi-console">
+        <http:listener config-ref="ic-sfdc-sapi-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="ic-sfdc-sapi-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="put:\contacts\(id):application\json:ic-sfdc-sapi-config">
+        <logger level="INFO" doc:name="Put Flow Start" doc:id="05851971-5745-4191-a79c-466f434d4ad5" message="flow started"/>
+		<flow-ref doc:name="Calling Put Flow" doc:id="e678dae6-fad1-4473-9e8d-255f87510146" name="put:\contacts\(id):application\json:ic-sfdc-sapi-config1"/>
+		<logger level="INFO" doc:name="Put Flow End" doc:id="f1560aa8-9d95-485f-a30c-c5253ed9234a" message="flow ended"/>
+    </flow>
+    <flow name="delete:\contacts\(id):ic-sfdc-sapi-config">
+        <logger level="INFO" doc:name="Delete Flow Start" doc:id="6d25337d-7a25-4a57-a083-712d40abdbd0" message="flow start"/>
+		<flow-ref doc:name="Calling Delete Flow" doc:id="4e01295f-ca12-44dc-82e5-94324b154d0c" name="delete:\contacts\(id):ic-sfdc-sapi-config1"/>
+		<logger level="INFO" doc:name="Delete Flow End" doc:id="b4b95f39-6ebf-4952-ac70-9d190249f3e4" message="floe ended"/>
+    </flow>
+    <flow name="get:\contacts:ic-sfdc-sapi-config">
+        <logger level="INFO" doc:name="Get Flow Start" doc:id="5d1aa379-862a-4f3f-ad43-cfc30511c56d" message="flow started"/>
+		<flow-ref doc:name="Calling Get Flow" doc:id="9e11df2a-ddf8-4c0f-8bea-ddc330b216a4" name="get:\contacts:ic-sfdc-sapi-config1"/>
+		<logger level="INFO" doc:name="Get Flow End" doc:id="f1c36622-88a0-40e2-b258-59fdfe7bfa71" message="flow end"/>
+    </flow>
+    <flow name="get:\contacts\(id):ic-sfdc-sapi-config">
+        <logger level="INFO" doc:name="Get Flow Start By Id" doc:id="6ce59046-11e9-4fb0-b892-066c0054f5d4" message="flow started"/>
+		<flow-ref doc:name="Calling Get Flow By Id" doc:id="bca62cd6-d7a5-4321-a3eb-f3f8415963a6" name="get:\contacts\(id):ic-sfdc-sapi-config1"/>
+		<logger level="INFO" doc:name="Get Flow End By Id" doc:id="87cc3015-c3e5-44a2-85d5-f842db9fc949" message="flow ended"/>
+    </flow>
+    <flow name="post:\contacts:application\json:ic-sfdc-sapi-config">
+		<logger level="INFO" doc:name="Post Flow Start" doc:id="d402bbc3-a5d9-4f67-896d-2a3a3a7fdef3" message="flow started"/>
+		<flow-ref doc:name="Calling Post Flow" doc:id="d5af2322-9d22-412f-8cd6-690113dd95c5" name="post:\contacts:application\json:ic-sfdc-sapi-config1"/>
+		<logger level="INFO" doc:name="Post Flow End" doc:id="0a52f8b5-11f5-457a-990a-e8cdcf841146" message="flow ended"/>
+    </flow>
+</mule>

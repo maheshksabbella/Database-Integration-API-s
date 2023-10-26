@@ -1,0 +1,19 @@
+{
+ "email": "xyz.gmail.com",
+ "first_name": "xyz",
+ "last_name" : "ysd",
+ "mailing_city" : "Hyderabad",
+ "mailing_country": "India",
+ "mailing_postal_code": "56675",
+ "mailing_state": "Telangana",
+ "mailing_street": "main raod",
+ "mobile_phone": "9542682920",
+ "other_city": "banglore",
+ "other_country": "US",
+ "other_state": "Tamilnadu",
+ "other_street": "kalava",
+ "title": "developer",
+ "external_id	": 12,
+ "sync_new_record_to_sfdc": true,
+ "sync_updated_record_to_sfdc": true
+}

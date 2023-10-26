@@ -1,0 +1,23 @@
+%dw 2.0
+
+type auto_dcb6fde6_9ee2_46e2_9ccd_777bbfdb46cb_Input_Payload = {
+  other_state?: String, 
+  mailing_city?: String, 
+  other_city?: String, 
+  mailing_state?: String, 
+  mailing_street?: String, 
+  last_name: String, 
+  external_id?: Number, 
+  sync_updated_record_to_sfdc?: Boolean, 
+  title?: String, 
+  mailing_country?: String, 
+  mobile_phone?: String, 
+  other_country?: String, 
+  sync_new_record_to_sfdc?: Boolean, 
+  mailing_postal_code?: String, 
+  other_street?: String, 
+  first_name?: String, 
+  email?: String, 
+  _?: Any
+} {"description": "the input data to create a contact"}
+

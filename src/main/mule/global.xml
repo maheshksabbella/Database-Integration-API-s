@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+       <http:listener-config name="ic-sfdc-sapi-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="${https.port}" protocol="HTTPS">
+			<tls:context >
+				<tls:key-store type="jks" path="keystore/server-keystore.jks" keyPassword="${secure::tls.keypassword}" password="${secure::tls.password}" />
+			</tls:context>
+		</http:listener-connection>
+    </http:listener-config>
+    <apikit:config xmlns:http="http://www.mulesoft.org/schema/mule/http" name="ic-sfdc-sapi-config" api="resource::644e9832-fa62-4f8f-9445-dfd7116eebf7:ic-db-sapi:1.0.0:raml:zip:ic-sfdc-sapi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+		
+</apikit:config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="3eeddc7e-b177-4ce7-87d7-07bd5a2e1724" >
+		<db:my-sql-connection host="${secure::host}" port="${secure::port}" user="${secure::user}" password="${secure::password}" database="${secure::name}" />
+	</db:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="9b671b3c-b36f-4b7b-8d45-4f87a651d041" file="properties\config.yaml" />
+	<configuration doc:name="Configuration" doc:id="158654da-8afc-4013-b6b9-0a596f102cb5" defaultErrorHandler-ref="Error_Handler" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="e0577a8d-e37e-4077-81bf-8f56a4a60817" file="properties\config.yaml" key="password12345678" />
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="dd999eab-3ebf-4dea-a124-0b785c3225fa" >
+		<salesforce:basic-connection username="maheshk.sabbella-qkr6@force.com" password="Mahesh@6675" securityToken="M4TZOh5PnjwKReAnKmU7vFLp"/>
+	</salesforce:sfdc-config>
+
+</mule>

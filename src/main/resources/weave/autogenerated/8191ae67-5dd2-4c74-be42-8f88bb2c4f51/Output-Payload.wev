@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_8191ae67_5dd2_4c74_be42_8f88bb2c4f51_Output_Payload = Array<{  SyncUpdatedRecordToSFDB?: Boolean,   Email: String,   FirstName: String,   ExternalId?: Number,   MailingCountry: String,   Title: String,   MailingCity: String,   "type": String,   OtherState: String,   OtherStreet: String,   MailingState: String,   MobilePhone: String,   OtherCity: String,   MailingPostalCode: String,   OtherCountry: String,   LastName: String,   SyncNewRecordToSFDB?: Boolean,   MailingStreet: String,   _?: Any}>
+

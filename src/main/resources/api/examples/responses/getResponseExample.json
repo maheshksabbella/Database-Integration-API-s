@@ -1,0 +1,23 @@
+ [
+    {
+        "Id": 1,
+        "Email": "xyz@gmail.com",
+        "FirstName": "xyz",
+        "MailingCountry": "India",
+        "Title": "developer",
+        "MailingCity": "Hyderabad",
+        "type": "Contact",
+        "OtherState": "Tamilnadu",
+        "OtherStreet": "kalava",
+        "MailingState": "Telangana",
+        "MobilePhone": "9542682920",
+        "OtherCity": "banglore",
+        "MailingPostalCode": "56675",
+        "OtherCountry": "US",
+        "LastName": "ysd",
+        "MailingStreet": "main raod",
+        "ExternalId": 1,
+        "SyncNewRecordToSFDB": true,
+        "SyncUpdatedRecordToSFDB": true
+            }
+  ]

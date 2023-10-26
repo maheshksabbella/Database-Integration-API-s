@@ -1,0 +1,16 @@
+#%RAML 1.0 Library
+types:
+  response:
+    type: object
+    properties:
+      is_success:
+        description: Success Flag
+        type: boolean
+        required: true
+      id:
+        description: Contact Id 
+        type: integer
+        required: false
+      errors:
+        type: array
+        description: Errors

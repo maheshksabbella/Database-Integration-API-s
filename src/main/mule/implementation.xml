@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+    <flow name="put:\contacts\(id):application\json:ic-sfdc-sapi-config1" doc:id="afee0837-34c1-4068-9161-bd4fd7e0317e">
+		<logger level="INFO" doc:name="Update Contact By Id Started" doc:id="d3b23805-3b29-4d4b-8e3f-4ecaaeefd761" message="#[flow.name] Flow Started"/>
+		<set-variable value="#[attributes.uriParams.id]" doc:name="Set Variable" doc:id="cf27fc10-0d43-4cb0-ac06-27be415cee50" variableName="id"/>
+		<db:query-single doc:name="Query single" doc:id="0630923c-6900-429e-8feb-abde0956f0ee" config-ref="Database_Config" target="vGetCaseResponse">
+			<db:sql><![CDATA[select Id from contacts where Id=:Id]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+	"Id": attributes.uriParams.id
+}]]]></db:input-parameters>
+		</db:query-single>
+		<choice doc:name="Choice" doc:id="b9163e1f-0020-427b-9abb-fa5a897fd004" >
+			<when expression="#[isEmpty(vars.vGetCaseResponse)]">
+				<ee:transform doc:name="ID Not Found Case" doc:id="ebaa1e69-45b5-4f14-97e4-5fcdd75ea5f6" >
+					<ee:message >
+						<ee:set-payload resource="dwlScripts/noRecordFound.dwl" />
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Not Found" doc:id="d74d07b5-a753-40f5-8557-a5d96230ea98" message="end"/>
+			</when>
+			<otherwise >
+				<db:update doc:name="To Modify Existing Contact By Id" doc:id="c882da90-161c-4d49-834e-a5a6100a475e" config-ref="Database_Config">
+			<db:sql><![CDATA[UPDATE contacts
+SET 
+     Email = :Email,
+    FirstName = :FirstName,
+    LastName = :LastName,
+    MailingCity = :MailingCity,
+    MailingCountry = :MailingCountry,
+    MailingState = :MailingState,
+    MailingStreet = :MailingStreet,
+    MailingPoastalCode = :MailingPoastalCode,
+    MobilePhone = :MobilePhone,
+    OtherCity = :OtherCity,
+    OtherCountry = :OtherCountry,
+    OtherState = :OtherState,
+    Title = :Title,
+    ExternalID = :ExternalId,
+    SyncNewRecordToSFDB = :SyncNewRecordToSFDB,
+    SyncUpdatedRecordToSFDB = :SyncUpdatedRecordToSFDB
+WHERE
+    Id = :Id;
+]]></db:sql>
+			<db:input-parameters><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+	"Id": vars.id,
+	("Email": payload.email) if(not isEmpty(payload.email)),
+	("FirstName": payload.first_name) if(not isEmpty(payload.first_name)),
+	("LastName": payload.last_name) if(not isEmpty(payload.last_name)),
+	("MailingCity": payload.mailing_city) if(not isEmpty(payload.mailing_city)),
+	("MailingCountry": payload.mailing_country) if(not isEmpty(payload.mailing_country)),
+	("MailingPoastalCode": payload.mailing_postal_code) if(not isEmpty(payload.mailing_postal_code)),
+	("MailingState": payload.mailing_state) if(not isEmpty(payload.mailing_state)),
+	("MailingStreet": payload.mailing_street) if(not isEmpty(payload.mailing_street)),
+	("MobilePhone": payload.mobile_phone) if(not isEmpty(payload.mobile_phone)),
+	("OtherCity": payload.other_city) if(not isEmpty(payload.other_city)),
+	("OtherCountry": payload.other_country) if(not isEmpty(payload.other_country)),
+	("OtherState": payload.other_state) if(not isEmpty(payload.other_state)),
+	("OtherStreet": payload.other_street) if(not isEmpty(payload.other_street)),
+	("Title": payload.title) if(not isEmpty(payload.title)),
+	("ExternalId": payload.external_id) if(not isEmpty(payload.external_id)),
+	("SyncNewRecordToSFDB": payload.sync_new_record_to_sfdc) if(not isEmpty(payload.sync_new_record_to_sfdc)),
+	("SyncUpdatedRecordToSFDB": payload.sync_updated_record_to_sfdc ) if(not isEmpty(payload.sync_updated_record_to_sfdc))
+}]]]></db:input-parameters>
+		</db:update>
+				<ee:transform doc:name="Put Output" doc:id="fd2aabcd-2f0f-4c4d-86dc-ba77c4b48ef5">
+			<ee:message>
+				<ee:set-payload resource="dwlScripts/deleteOutput.dwl" />
+			</ee:message>
+		</ee:transform>
+				<logger level="INFO" doc:name="Update Contact By Id Ended" doc:id="33ab4d24-551f-4178-9672-c1f78a4b704f" message="#[flow.name] Flow Ended" />
+			</otherwise>
+		</choice>
+    </flow>
+	<flow name="delete:\contacts\(id):ic-sfdc-sapi-config1" doc:id="a5ed2b40-b6cf-4bce-bdfb-98638b89812f">
+		<logger level="INFO" doc:name="Delete Contact By Id Started" doc:id="7611324d-a6db-48ba-8137-979c3fad0ea9" message="#[flow.name] Flow Started"/>
+		<db:query-single doc:name="Query single" doc:id="87408fb7-45c4-4230-b2a4-f4b45354b653" config-ref="Database_Config">
+			<db:sql ><![CDATA[select Id from contacts where Id=:Id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"Id": attributes.uriParams.id
+}]]]></db:input-parameters>
+		</db:query-single>
+		<choice doc:name="Choice" doc:id="c194600d-ba2c-4e25-aaf5-6ac550634f5b" >
+			<when expression="#[isEmpty(payload)]">
+				<ee:transform doc:name="NO Record Found" doc:id="83fd8610-3e1d-4d8d-b11d-255b0071b2b6" >
+					<ee:message >
+						<ee:set-payload resource="dwlScripts/notFoundId.dwl" />
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Not Found" doc:id="06d2d3e4-56ef-4ae3-b4aa-fd4d9e7a15dc" message="end"/>
+			</when>
+			<otherwise >
+				<db:delete doc:name="To Delete The Contact By Id" doc:id="5a2a9847-7d52-4837-96e4-1108e880102e" config-ref="Database_Config">
+			<db:sql><![CDATA[delete from contacts where Id=:id]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+	"id": payload.Id
+}]]]></db:input-parameters>
+		</db:delete>
+				<ee:transform doc:name="Delete Output" doc:id="5790464e-4c1d-44fa-b346-c6d2ca47d7d4">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  is_success: true,
+  errors: []
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+				<logger level="INFO" doc:name="Delete Contact By Id Ended" doc:id="a590ca18-75e5-43af-b8c5-b8bd6d60fdf4" message="#[flow.name] Flow Ended" />
+			</otherwise>
+		</choice>
+    </flow>
+    <flow name="get:\contacts:ic-sfdc-sapi-config1" doc:id="8191ae67-5dd2-4c74-be42-8f88bb2c4f51">
+		<logger level="INFO" doc:name="Get Contact By Id Started" doc:id="0a4304a8-a676-4662-9f9a-6f045d88c45c" message="#[flow.name] Flow Started"/>
+		<db:select doc:name="To Retrive All Contacts" doc:id="7a928cb5-057f-430d-905f-af9f3a68fff6" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from contacts]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Get By Id Output" doc:id="a82daf03-53aa-4fef-ac4a-173b872e410f">
+			<ee:message>
+				<ee:set-payload resource="dwlScripts/getByIdOutput.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Get Contact By Id Ended" doc:id="9b9284be-61c1-42f0-b5c4-af3ad41e7cb6" message="#[flow.name] Flow Ended"/>
+    </flow>
+    <flow name="get:\contacts\(id):ic-sfdc-sapi-config1" doc:id="eb92862b-459d-4571-a541-0d2b6aacf3e2">
+		<logger level="INFO" doc:name="Get Contacts Flow Started" doc:id="5488bf9a-9918-43fa-80d0-0e7f79681ba9" message="#[flow.name] Flow Started"/>
+		<db:select doc:name="To Retrive Contact By Id" doc:id="097dd592-d0a6-415b-afbf-9129abf184a6" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from contacts where Id= :id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+"id": attributes.uriParams.id
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Get Output" doc:id="f8bf8408-db42-48ca-a353-1e62b28d9b2c">
+			<ee:message>
+				<ee:set-payload resource="dwlScripts/getOutput.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Get Contacts Flow Ended" doc:id="794865a2-e18f-4f4f-84d6-33a3975a3e89" message="#[flow.name] Flow Ended"/>
+    </flow>
+    <flow name="post:\contacts:application\json:ic-sfdc-sapi-config1" doc:id="dcb6fde6-9ee2-46e2-9ccd-777bbfdb46cb">
+		<logger level="INFO" doc:name="Create Contact Flow Started" doc:id="363a13ec-8945-447b-928f-b1a0a26f7930" message="#[flow.name] Flow Started"/>
+		<db:insert doc:name="To Create Contact Object" doc:id="137b831b-1487-4fcb-b478-da4263ef1e52" config-ref="Database_Config" target="my">
+			<db:sql ><![CDATA[INSERT INTO contacts (Email, FirstName, LastName, MailingCity, MailingCountry,MailingPoastalCode, MailingState, MailingStreet, MobilePhone, OtherCity, OtherCountry, OtherState, OtherStreet, Title, ExternalID, SyncNewRecordToSFDB, SyncUpdatedRecordToSFDB)
+VALUES (:Email,:FirstName,:LastName,:MailingCity,:MailingCountry,:MailingPoastalCode,:MailingState,:MailingStreet,:MobilePhone,:OtherCity,:OtherCountry,:OtherState,:OtherStreet,:Title,:ExternalId,:SyncNewRecordToSFDB,:SyncUpdatedRecordToSFDB);
+
+]]></db:sql>
+			<db:input-parameters ><![CDATA[#[output application/json
+---
+{
+	"Email": payload.email,
+	"FirstName": payload.first_name,
+	"LastName": payload.last_name,
+	"MailingCity": payload.mailing_city,
+	"MailingCountry": payload.mailing_country,
+	"MailingPoastalCode": payload.mailing_postal_code,
+	"MailingState": payload.mailing_state,
+	"MailingStreet": payload.mailing_street,
+	"MobilePhone": payload.mobile_phone,
+	"OtherCity": payload.other_city,
+	"OtherCountry": payload.other_country,
+	"OtherState": payload.other_state,
+	"OtherStreet": payload.other_street,
+	"Title": payload.title,
+	"ExternalId": payload.external_id,
+	"SyncNewRecordToSFDB": payload.sync_new_record_to_sfdc,
+	"SyncUpdatedRecordToSFDB": payload.sync_updated_record_to_sfdc
+}]]]></db:input-parameters>
+		</db:insert>
+		<db:select doc:name="Retriving Id" doc:id="38ceb847-6155-40fc-87fa-e63546d7dee6" config-ref="Database_Config">
+			<db:sql ><![CDATA[select Id from contacts where LastName= :LastName;]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"LastName": payload.last_name
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Post Output" doc:id="76319ebf-1462-40eb-aced-e4feaa246020">
+			<ee:message>
+				<ee:set-payload resource="dwlScripts/postOutput.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Create Contact Flow Ended" doc:id="87d91a25-3eec-4d16-b198-a791feb44364" message="#[flow.name] Flow Ended"/>
+    </flow>
+</mule>
