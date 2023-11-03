@@ -39,7 +39,8 @@ SET
     Title = :Title,
     ExternalID = :ExternalId,
     SyncNewRecordToSFDB = :SyncNewRecordToSFDB,
-    SyncUpdatedRecordToSFDB = :SyncUpdatedRecordToSFDB
+    SyncUpdatedRecordToSFDB = :SyncUpdatedRecordToSFDB,
+    UpdatedDate = :UpdatedDate
 WHERE
     Id = :Id;
 ]]></db:sql>
@@ -64,7 +65,8 @@ output application/json
 	("Title": payload.title) if(not isEmpty(payload.title)),
 	("ExternalId": payload.external_id) if(not isEmpty(payload.external_id)),
 	("SyncNewRecordToSFDB": payload.sync_new_record_to_sfdc) if(not isEmpty(payload.sync_new_record_to_sfdc)),
-	("SyncUpdatedRecordToSFDB": payload.sync_updated_record_to_sfdc ) if(not isEmpty(payload.sync_updated_record_to_sfdc))
+	("SyncUpdatedRecordToSFDB": payload.sync_updated_record_to_sfdc ) if(not isEmpty(payload.sync_updated_record_to_sfdc)),
+	"UpdatedDate": now()
 }]]]></db:input-parameters>
 		</db:update>
 				<ee:transform doc:name="Put Output" doc:id="fd2aabcd-2f0f-4c4d-86dc-ba77c4b48ef5">
@@ -75,6 +77,25 @@ output application/json
 				<logger level="INFO" doc:name="Update Contact By Id Ended" doc:id="33ab4d24-551f-4178-9672-c1f78a4b704f" message="#[flow.name] Flow Ended" />
 			</otherwise>
 		</choice>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="1321854d-e207-40d1-8d5c-0f78b8167668" type="ANY">
+				<ee:transform doc:name="Transform Message" doc:id="7540ccd2-6cea-4dd4-bf87-3d5d235d6a99" >
+					<ee:message >
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="vErrorMapping" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"httpStatus": if ( not isEmpty(error.errorMessage.attributes.statusCode) ) (error.errorMessage.attributes.statusCode) else (attributes.statusCode default 500),
+	"errorCode": "DB_ERROR",
+	"errorDescription": (error.errorMessage.'payload'.errorMessage) default error.description
+}]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<flow-ref doc:name="Flow Reference" doc:id="a8e4b530-3040-4357-af86-0738c8194e3a" name="sf-common-error-response"/>
+			</on-error-propagate>
+		</error-handler>
     </flow>
 	<flow name="delete:\contacts\(id):ic-sfdc-sapi-config1" doc:id="a5ed2b40-b6cf-4bce-bdfb-98638b89812f">
 		<logger level="INFO" doc:name="Delete Contact By Id Started" doc:id="7611324d-a6db-48ba-8137-979c3fad0ea9" message="#[flow.name] Flow Started"/>
@@ -114,6 +135,24 @@ output application/json
 				<logger level="INFO" doc:name="Delete Contact By Id Ended" doc:id="a590ca18-75e5-43af-b8c5-b8bd6d60fdf4" message="#[flow.name] Flow Ended" />
 			</otherwise>
 		</choice>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="1ea074ec-cec6-4c9a-957a-f26777c4d30b" type="ANY" >
+				<ee:transform doc:name="Transform Message" doc:id="3e463454-eaac-4afd-bcc7-e29684649ab8" >
+					<ee:message />
+					<ee:variables >
+						<ee:set-variable variableName="vErrorMapping" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"httpStatus": if ( not isEmpty(error.errorMessage.attributes.statusCode) ) (error.errorMessage.attributes.statusCode) else (attributes.statusCode default 500),
+	"errorCode": "DB_ERROR",
+	"errorDescription": (error.errorMessage.'payload'.errorMessage) default error.description
+}]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<flow-ref doc:name="Flow Reference" doc:id="94c88446-d072-4f6f-99c8-617aa28d33a8" name="sf-common-error-response" />
+			</on-error-propagate>
+		</error-handler>
     </flow>
     <flow name="get:\contacts:ic-sfdc-sapi-config1" doc:id="8191ae67-5dd2-4c74-be42-8f88bb2c4f51">
 		<logger level="INFO" doc:name="Get Contact By Id Started" doc:id="0a4304a8-a676-4662-9f9a-6f045d88c45c" message="#[flow.name] Flow Started"/>
@@ -126,27 +165,82 @@ output application/json
 			</ee:message>
 		</ee:transform>
 		<logger level="INFO" doc:name="Get Contact By Id Ended" doc:id="9b9284be-61c1-42f0-b5c4-af3ad41e7cb6" message="#[flow.name] Flow Ended"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="7f4b8078-b2db-4d49-ba5f-ba32631b6c29" type="ANY" >
+				<ee:transform doc:name="Transform Message" doc:id="6573d8db-35d9-4281-a033-126df7ca0802" >
+					<ee:message />
+					<ee:variables >
+						<ee:set-variable variableName="vErrorMapping" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"httpStatus": if ( not isEmpty(error.errorMessage.attributes.statusCode) ) (error.errorMessage.attributes.statusCode) else (attributes.statusCode default 500),
+	"errorCode": "DB_ERROR",
+	"errorDescription": (error.errorMessage.'payload'.errorMessage) default error.description
+}]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<flow-ref doc:name="Flow Reference" doc:id="e564193e-bd04-45a6-a887-9779ed28e6e7" name="sf-common-error-response" />
+			</on-error-propagate>
+		</error-handler>
     </flow>
     <flow name="get:\contacts\(id):ic-sfdc-sapi-config1" doc:id="eb92862b-459d-4571-a541-0d2b6aacf3e2">
 		<logger level="INFO" doc:name="Get Contacts Flow Started" doc:id="5488bf9a-9918-43fa-80d0-0e7f79681ba9" message="#[flow.name] Flow Started"/>
-		<db:select doc:name="To Retrive Contact By Id" doc:id="097dd592-d0a6-415b-afbf-9129abf184a6" config-ref="Database_Config">
-			<db:sql ><![CDATA[select * from contacts where Id= :id]]></db:sql>
-			<db:input-parameters ><![CDATA[#[{
-"id": attributes.uriParams.id
+		<set-variable value="#[attributes.uriParams.id]" doc:name="Set Variable" doc:id="072d52df-b5c5-43e7-8096-a84cec2f0259" variableName="id" />
+		<db:query-single doc:name="Query single1" doc:id="7c9783fc-3d29-4d18-a96a-1faec9f30424" config-ref="Database_Config" target="vGetCaseResponse">
+			<db:sql><![CDATA[select Id from contacts where Id=:Id]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+	"Id": attributes.uriParams.id
+}]]]></db:input-parameters>
+		</db:query-single>
+		<choice doc:name="Choice" doc:id="0df8d56a-cbf3-488e-ac0f-933615d4d1da" >
+			<when expression="#[isEmpty(vars.vGetCaseResponse)]">
+				<ee:transform doc:name="ID Not Found Case" doc:id="5e2e98ac-efec-4709-a7a4-fe4781433c59" >
+					<ee:message >
+						<ee:set-payload resource="dwlScripts/noRecordFound.dwl" />
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Not Found" doc:id="66830af4-2691-44cd-b2ba-4c908e6ec4bc" message="end" />
+			</when>
+			<otherwise >
+				<db:select doc:name="To Retrive Contact By Id" doc:id="097dd592-d0a6-415b-afbf-9129abf184a6" config-ref="Database_Config">
+			<db:sql><![CDATA[select * from contacts where Id= :id]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+"id": vars.id
 }]]]></db:input-parameters>
 		</db:select>
-		<ee:transform doc:name="Get Output" doc:id="f8bf8408-db42-48ca-a353-1e62b28d9b2c">
+				<ee:transform doc:name="Get Output" doc:id="f8bf8408-db42-48ca-a353-1e62b28d9b2c">
 			<ee:message>
 				<ee:set-payload resource="dwlScripts/getOutput.dwl" />
 			</ee:message>
 		</ee:transform>
-		<logger level="INFO" doc:name="Get Contacts Flow Ended" doc:id="794865a2-e18f-4f4f-84d6-33a3975a3e89" message="#[flow.name] Flow Ended"/>
+				<logger level="INFO" doc:name="Get Contacts Flow Ended" doc:id="794865a2-e18f-4f4f-84d6-33a3975a3e89" message="#[flow.name] Flow Ended" />
+			</otherwise>
+		</choice>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c04f3bf8-141d-471d-8e35-6776c8124725" type="ANY" >
+				<ee:transform doc:name="Transform Message" doc:id="90491130-a1a1-4494-b1f0-e1c1cfd79ce8" >
+					<ee:message />
+					<ee:variables >
+						<ee:set-variable variableName="vErrorMapping" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"httpStatus": if ( not isEmpty(error.errorMessage.attributes.statusCode) ) (error.errorMessage.attributes.statusCode) else (attributes.statusCode default 500),
+	"errorCode": "DB_ERROR",
+	"errorDescription": (error.errorMessage.'payload'.errorMessage) default error.description
+}]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<flow-ref doc:name="Flow Reference" doc:id="1dc2dee6-afc6-4f7f-a297-8c58494fd488" name="sf-common-error-response" />
+			</on-error-propagate>
+		</error-handler>
     </flow>
     <flow name="post:\contacts:application\json:ic-sfdc-sapi-config1" doc:id="dcb6fde6-9ee2-46e2-9ccd-777bbfdb46cb">
 		<logger level="INFO" doc:name="Create Contact Flow Started" doc:id="363a13ec-8945-447b-928f-b1a0a26f7930" message="#[flow.name] Flow Started"/>
 		<db:insert doc:name="To Create Contact Object" doc:id="137b831b-1487-4fcb-b478-da4263ef1e52" config-ref="Database_Config" target="my">
-			<db:sql ><![CDATA[INSERT INTO contacts (Email, FirstName, LastName, MailingCity, MailingCountry,MailingPoastalCode, MailingState, MailingStreet, MobilePhone, OtherCity, OtherCountry, OtherState, OtherStreet, Title, ExternalID, SyncNewRecordToSFDB, SyncUpdatedRecordToSFDB)
-VALUES (:Email,:FirstName,:LastName,:MailingCity,:MailingCountry,:MailingPoastalCode,:MailingState,:MailingStreet,:MobilePhone,:OtherCity,:OtherCountry,:OtherState,:OtherStreet,:Title,:ExternalId,:SyncNewRecordToSFDB,:SyncUpdatedRecordToSFDB);
+			<db:sql ><![CDATA[INSERT INTO contacts (Email, FirstName, LastName, MailingCity, MailingCountry,MailingPoastalCode, MailingState, MailingStreet, MobilePhone, OtherCity, OtherCountry, OtherState, OtherStreet, Title, ExternalID, SyncNewRecordToSFDB, SyncUpdatedRecordToSFDB,CreatedDate)
+VALUES (:Email,:FirstName,:LastName,:MailingCity,:MailingCountry,:MailingPoastalCode,:MailingState,:MailingStreet,:MobilePhone,:OtherCity,:OtherCountry,:OtherState,:OtherStreet,:Title,:ExternalId,:SyncNewRecordToSFDB,:SyncUpdatedRecordToSFDB,:CreatedDate);
 
 ]]></db:sql>
 			<db:input-parameters ><![CDATA[#[output application/json
@@ -168,7 +262,8 @@ VALUES (:Email,:FirstName,:LastName,:MailingCity,:MailingCountry,:MailingPoastal
 	"Title": payload.title,
 	"ExternalId": payload.external_id,
 	"SyncNewRecordToSFDB": payload.sync_new_record_to_sfdc,
-	"SyncUpdatedRecordToSFDB": payload.sync_updated_record_to_sfdc
+	"SyncUpdatedRecordToSFDB": payload.sync_updated_record_to_sfdc,
+	"CreatedDate": now()
 }]]]></db:input-parameters>
 		</db:insert>
 		<db:select doc:name="Retriving Id" doc:id="38ceb847-6155-40fc-87fa-e63546d7dee6" config-ref="Database_Config">
@@ -183,5 +278,24 @@ VALUES (:Email,:FirstName,:LastName,:MailingCity,:MailingCountry,:MailingPoastal
 			</ee:message>
 		</ee:transform>
 		<logger level="INFO" doc:name="Create Contact Flow Ended" doc:id="87d91a25-3eec-4d16-b198-a791feb44364" message="#[flow.name] Flow Ended"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="3dd01f7a-ccdc-41a1-8bd0-8328543a1bbd" type="ANY" >
+				<ee:transform doc:name="Transform Message" doc:id="a26691bf-5de3-48b6-b6cc-6efe5c524463" >
+					<ee:message />
+					<ee:variables >
+						<ee:set-variable variableName="vErrorMapping" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"httpStatus": if ( not isEmpty(error.errorMessage.attributes.statusCode) ) (error.errorMessage.attributes.statusCode) else (attributes.statusCode default 500),
+	"errorCode": "DB_ERROR",
+	"errorDescription": (error.errorMessage.'payload'.errorMessage) default error.description
+}]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<flow-ref doc:name="Flow Reference" doc:id="535c66ad-2421-480b-a22a-4b26d96334f9" name="sf-common-error-response" />
+			</on-error-propagate>
+		</error-handler>
     </flow>
 </mule>
+
